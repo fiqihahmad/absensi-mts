@@ -4,28 +4,48 @@
 <style>
     @media print {
         @page {
-            /* size: A4 landscape; Pakai landscape agar lebih lebar */
-            margin: 6mm; /* Menghilangkan margin bawaan (yang memuat title/url) */
+            margin: 5mm; 
         }
     
         body {
             margin: 0;
             padding: 0;
-            color: #000 !important; /* pastikan teks hitam */    
+            color: #000 !important;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            /* font-size: 10px; */
+            page-break-inside: auto;
+            font-size: 12px;
+        }
+
+        tbody {
+            display: table-row-group;
+        }
+
+        tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
         }
 
         th, td {
-            border: 1px solid #000 !important; /* border hitam solid */
-            color: #000 !important;             /* teks hitam */
+            border: 1px solid #000 !important; 
+            color: #000 !important;             
             padding: 2px;
         }
 
+        .sidebar,
+        .navbar,
+        .no-print {
+            display: none !important;
+        }
+
+        #print-area {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }
         
     }
     </style>
@@ -33,8 +53,8 @@
 
 @section('content')
 <div class="container">
-    <h1 class="h3 mb-3">Rekap Absensi Mapel</h1>
-    <div class="card">
+    <h1 class="h3 mb-3 no-print">Rekap Absensi Mapel</h1>
+    <div class="card no-print">
         <div class="card-body">
             <form method="GET" class="mb-3">
                 <div class="row">
@@ -89,7 +109,7 @@
     @if($absensi->count() > 0)
     <div class="card">
         <div class="card-body">
-            <button class="btn btn-danger" onclick="printSection('print-area')">
+            <button class="btn btn-danger no-print" onclick="printSection('print-area')">
                 <i class="fas fa-print"></i> Cetak PDF
             </button>
             <div class="table-responsive mt-4" id="print-area">

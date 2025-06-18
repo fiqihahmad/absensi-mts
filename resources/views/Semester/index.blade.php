@@ -10,6 +10,8 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
+                
+                {{-- Pesan dari controller 'with()' --}}
                 @if(session('tambah'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ session('tambah') }}
@@ -47,7 +49,7 @@
                         Tambah Semester
                     </button>
                 </div>
-                <div class="card-body text-center">
+                <div class="card-body text-center table-responsive">
                     <table class="table">
                         <thead>
                             <tr>
@@ -72,19 +74,17 @@
                                     @endif
                                 </td>
                                 <td>
-                                    @if($semester->status == 'Nonaktif')
-                                        <a href="{{ route('semester.activate', $semester->id) }}" class="btn btn-sm btn-outline-danger">Aktifkan</a>
-                                    @else
-                                        <a href="{{ route('semester.deactivate', $semester->id) }}" class="btn btn-sm btn-outline-danger">Nonaktifkan</a>
-                                    @endif
-                                    {{-- <form action="{{ route('semester.destroy', $semester->id) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Yakin mau hapus?')">Hapus</button>
-                                    </form> --}}
-                                    <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDelete{{ $semester->id }}">
-                                        Hapus
-                                    </button>
+                                    <div class="d-inline-flex gap-1">
+                                        @if($semester->status == 'Nonaktif')
+                                            <a href="{{ route('semester.activate', $semester->id) }}" class="btn btn-sm btn-outline-danger">Aktifkan</a>
+                                        @else
+                                            <a href="{{ route('semester.deactivate', $semester->id) }}" class="btn btn-sm btn-outline-danger">Nonaktifkan</a>
+                                        @endif
+                                        
+                                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDelete{{ $semester->id }}">
+                                            Hapus
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                             <!-- Modal Konfirmasi -->
@@ -131,7 +131,7 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="tahun_ajaran" class="form-label">Tahun Ajaran</label>
-                            <input type="text" class="form-control" name="tahun_ajaran" placeholder="2025/2026" required>
+                            <input type="text" class="form-control" name="tahun_ajaran" required>
                         </div>
                         <div class="mb-3">
                             <label for="semester" class="form-label">Semester</label>

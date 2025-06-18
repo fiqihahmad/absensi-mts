@@ -4,12 +4,15 @@
 
 @section('content')
 <div class="container-fluid p-0">
+
+    {{-- Pesan dari controller 'with()' --}}
     @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         {{ session('success') }}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     @endif
+    
     <h1 class="h3 mb-3">Dashboard</h1>
     
     <div class="row">
@@ -73,7 +76,7 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col mt-0">
-                                        <h5 class="card-title">Tahun Ajaran</h5>
+                                        <h5 class="card-title">Tahun Pelajaran</h5>
                                     </div>
                                     <div class="col-auto">
                                         <div class="stat text-primary">

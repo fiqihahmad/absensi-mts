@@ -9,6 +9,8 @@
       <li class="breadcrumb-item active" aria-current="page">Form Absensi</li>
     </ol>
 </nav>
+
+{{-- Pesan dari controller 'with()' --}}
 @if(session('tambah'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         {{ session('tambah') }}
@@ -52,7 +54,8 @@
             </div>
         </div>
 
-        <form method="POST" action="{{ route('absensi.mapel.store') }}">
+        {{-- form absensi --}}
+        <form method="POST" action="{{ route('absensi.store') }}">
             @csrf
             <input type="hidden" name="kelas_id" value="{{ $kelas_id }}">
             <input type="hidden" name="mapel_id" value="{{ $mapel_id }}">

@@ -21,12 +21,15 @@ class MapelController extends Controller
 
     public function index()
     {
+        // ambil semua data mapel
         $mapels = Mapel::all();
+        
         return view('mapel.index', compact('mapels'));
     }
 
     public function store(Request $request)
     {
+        // validasi form input
         $request->validate([
             'nama' => 'required|string|max:255|unique:mapel,nama'
         ],[
@@ -34,6 +37,7 @@ class MapelController extends Controller
             'nama.unique' => 'Mata pelajaran sudah tersedia.',
         ]);
 
+        // tambah mapel
         Mapel::create($request->all());
 
         return redirect()->route('mapel.index')->with('tambah', 'Data mapel berhasil ditambahkan.');
@@ -41,7 +45,7 @@ class MapelController extends Controller
 
     public function update(Request $request, $id)
     {
-        // cek nama mapel unik
+        // validasi form input
         $request->validate([
             'nama' => 'required|string|max:255|unique:mapel,nama,' . $id
         ], [
@@ -49,7 +53,10 @@ class MapelController extends Controller
             'nama.unique' => 'Gagal memperbarui, mata pelajaran sudah tersedia.',
         ]);
 
+        // ambil id mapel yang dipilih
         $mapel = Mapel::findOrFail($id);
+
+        // ubah mapel
         $mapel->update($request->all());
 
         return redirect()->route('mapel.index')->with('edit', 'Data mapel berhasil diperbarui.');
@@ -60,10 +67,10 @@ class MapelController extends Controller
         $mapel = Mapel::findOrFail($id);
         // Cek apakah mapel memiliki relasi dengan jadwal
         if ($mapel->jadwal()->exists()) {
-            return redirect()->route('mapel.index')->with('hapus', 'Gagal menghapus mapel, silakan hapus jadwal mengajar yang terkait terlebih dahulu.');
+            return redirect()->route('mapel.index')->with('hapus', 'Gagal menghapus mapel, silakan hapus jadwal pelajaran yang terkait terlebih dahulu.');
         }
 
-        // Jika tidak ada relasi, lanjut hapus
+        // Jika tidak ada relasi, hapus mapel
         $mapel->delete();
 
         return redirect()->route('mapel.index')->with('hapus', 'Data mapel berhasil dihapus.');

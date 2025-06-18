@@ -10,7 +10,19 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    @if(session('tambah'))
+
+                {{-- Pesan dari controller 'with()' --}}
+                @if ($errors->any())
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <ul class="mb-0 list-unstyled">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+                @if(session('tambah'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ session('tambah') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -41,7 +53,7 @@
                         Tambah Kelas
                     </button>
                 </div>
-                <div class="card-body">
+                <div class="card-body table-responsive">
                     <table class="table text-center">
                         <thead>
                             <tr>
@@ -60,15 +72,12 @@
                                 <td>{{ $row->nama }}</td>
                                 <td>{{ $row->guru->nama ?? '-' }}</td>
                                 <td>
-                                    <a class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editKelas{{ $row->id }}">Edit</a>
-                                    <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDelete{{ $row->id }}">
-                                        Hapus
-                                    </button>
-                                    {{-- <form action="{{ route('kelas.destroy', $row->id) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Yakin mau hapus?')">Hapus</button>
-                                    </form> --}}
+                                    <div class="d-inline-flex gap-1">
+                                        <a class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editKelas{{ $row->id }}">Edit</a>
+                                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDelete{{ $row->id }}">
+                                            Hapus
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                             
@@ -85,10 +94,10 @@
                                             @method('PUT')
                                             <div class="modal-body">
                                                 <label for="id">Kode Kelas</label>
-                                                <input type="text" class="form-control" name="id" value="{{ $row->id }}" placeholder="7A/8B/9C" required>
+                                                <input type="text" class="form-control" name="id" value="{{ $row->id }}" disabled>
 
                                                 <label for="kelas">Kelas</label>
-                                                <input type="text" class="form-control" name="nama" value="{{ $row->nama }}" placeholder="VII/VIII/IX" required>
+                                                <input type="text" class="form-control" name="nama" value="{{ $row->nama }}" required>
 
                                                 <label for="walikelas">Walikelas</label>
                                                 <select class="form-select mb-2" name="walikelas" required>
@@ -150,10 +159,10 @@
                     @csrf
                     <div class="modal-body">
                         <label for="id">Kode Kelas</label>
-                        <input type="text" class="form-control" name="id" placeholder="7A/8B/9C" required>
+                        <input type="text" class="form-control" name="id" required>
 
                         <label for="kelas">Kelas</label>
-                        <input type="text" class="form-control" name="nama" placeholder="VII/VIII/IX" required>
+                        <input type="text" class="form-control" name="nama" required>
 
                         <label for="walikelas">Walikelas</label>
                         <select class="form-select mb-2" name="walikelas" required>

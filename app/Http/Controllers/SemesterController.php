@@ -20,7 +20,9 @@ class SemesterController extends Controller
 
     public function index()
     {
+        // ambil data semester
         $semesters = Semester::all();
+
         return view('semester.index', compact('semesters'));
     }
 
@@ -33,13 +35,15 @@ class SemesterController extends Controller
 
         // Cek duplikat
         $exists = Semester::where('tahun_ajaran', $request->tahun_ajaran)
-            ->where('semester', $request->semester)
-            ->exists();
+                            ->where('semester', $request->semester)
+                            ->exists();
 
+        // jika duplikat pesan eror dan redirect ke halaman semester
         if ($exists) {
             return redirect()->route('semester.index')->with('error', 'Gagal tambah semester, silahkan pilih semester dan tahun ajaran yang berbeda.');
         }
 
+        // tambah semester
         Semester::create($request->all());
 
         return redirect()->route('semester.index')->with('tambah', 'Data berhasil ditambahkan.');
@@ -47,7 +51,10 @@ class SemesterController extends Controller
 
     public function destroy($id)
     {
+        // cari id semester yang akan dihapus
         $semester = Semester::findOrFail($id);
+
+        // hapus semester
         $semester->delete();
 
         return redirect()->route('semester.index')->with('hapus', 'Data semester berhasil dihapus.');
@@ -58,8 +65,10 @@ class SemesterController extends Controller
         // Nonaktifkan semua semester terlebih dahulu
         Semester::query()->update(['status' => 'Nonaktif']);
 
-        // Aktifkan semester yang dipilih
+        // cari id semester yang dipilih
         $semester = Semester::findOrFail($id);
+
+        // ubah status semester
         $semester->update(['status' => 'Aktif']);
 
         return redirect()->route('semester.index')->with('success', 'Semester berhasil diaktifkan!');
@@ -67,7 +76,10 @@ class SemesterController extends Controller
 
     public function deactivate($id)
     {
+        // cari id semester
         $semester = Semester::findOrFail($id);
+
+        // ubah status semester
         $semester->update(['status' => 'Nonaktif']);
 
         return redirect()->route('semester.index')->with('success', 'Semester berhasil dinonaktifkan!');

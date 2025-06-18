@@ -10,6 +10,8 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
+
+                {{-- Pesan dari controller 'with()' --}}
                 @if ($errors->any())
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <ul class="mb-0 list-unstyled">
@@ -52,7 +54,7 @@
                         Tambah Guru
                     </button>
                 </div>
-                <div class="card-body">
+                <div class="card-body table-responsive">
                     <table class="table text-center">
                         <thead>
                             <tr>
@@ -69,15 +71,12 @@
                                 <td>{{ $guru->user->username }}</td>
                                 <td>{{ $guru->nama }}</td>
                                 <td>
-                                    <a class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editGuru{{ $guru->id }}">Edit</a>
-                                    <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDelete{{ $guru->id }}" {{ $guru->user->username == 'gurupiket' ? 'disabled' : '' }}>
-                                        Hapus
-                                    </button>
-                                    {{-- <form action="{{ route('guru.destroy', $guru->id) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger" {{ $guru->user->username == 'gurupiket' ? 'disabled' : '' }} onclick="return confirm('Yakin mau hapus?')">Hapus</button>
-                                    </form> --}}
+                                    <div class="d-inline-flex gap-1">
+                                        <a class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editGuru{{ $guru->id }}">Edit</a>
+                                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDelete{{ $guru->id }}" {{ $guru->user->username == 'gurupiket' ? 'disabled' : '' }}>
+                                            Hapus
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                             @endforeach
@@ -101,15 +100,15 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="nama" class="form-label">Nama</label>
-                            <input type="text" class="form-control" name="nama" placeholder="Budi" required>
+                            <input type="text" class="form-control" name="nama" required>
                         </div>
                         <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
-                            <input type="text" class="form-control" name="username" placeholder="guru123" required>
+                            <input type="text" class="form-control" name="username" required>
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" name="password" placeholder="Password" required>
+                            <input type="password" class="form-control" name="password" required>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -145,7 +144,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Password (Kosongkan jika tidak diubah)</label>
-                            <input type="password" class="form-control" name="password" placeholder="Password">
+                            <input type="password" class="form-control" name="password">
                         </div>
                     </div>
                     <div class="modal-footer">

@@ -10,7 +10,9 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    @if(session('tambah'))
+
+                {{-- Pesan dari controller 'with()' --}}
+                @if(session('tambah'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ session('tambah') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -42,7 +44,7 @@
                     </button>
                 </div>
                 <div class="card-body table-responsive">
-                    <table class="table text-center">
+                    <table class="table" id="myTable">
                         <thead>
                             <tr>
                                 <th>No</th>
@@ -62,10 +64,12 @@
                                 <td>{{ $jadwal->mapel->nama }}</td>
                                 <td>{{ $jadwal->guru->nama }}</td>
                                 <td>
-                                    <a class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editJadwal{{ $jadwal->id }}">Edit</a>
-                                    <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDelete{{ $jadwal->id }}">
-                                        Hapus
-                                    </button>
+                                    <div class="d-inline-flex gap-1">
+                                        <a class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editJadwal{{ $jadwal->id }}">Edit</a>
+                                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDelete{{ $jadwal->id }}">
+                                            Hapus
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                             <!-- Modal Konfirmasi -->

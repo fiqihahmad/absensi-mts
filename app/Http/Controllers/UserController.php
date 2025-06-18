@@ -37,9 +37,13 @@ class UserController extends Controller
             'password.numbers' => 'Password harus berisi minimal satu angka.'
         ]);
 
+        // ambil user yang login
         $user = Auth::user();
+
+        // ganti username sesuai input form
         $user->username = $request->username;
 
+        // ganti password jika password diisi di form
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
         }

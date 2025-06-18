@@ -9,6 +9,8 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
+
+                {{-- Pesan dari controller 'with()' --}}
                 @if ($errors->any())
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <ul class="mb-0 list-unstyled">
@@ -51,7 +53,7 @@
                         Tambah Mata Pelajaran
                     </button>
                 </div>
-                <div class="card-body">
+                <div class="card-body table-responsive">
                     <table class="table text-center">
                         <thead>
                             <tr>
@@ -66,15 +68,12 @@
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $mapel->nama }}</td>
                                 <td>
-                                    <a class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editMapel{{ $mapel->id }}">Edit</a>
-                                    <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDelete{{ $mapel->id }}">
-                                        Hapus
-                                    </button>
-                                    {{-- <form action="{{ route('mapel.destroy', $mapel->id) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Yakin mau hapus?')">Hapus</button>
-                                    </form> --}}
+                                    <div class="d-inline-flex gap-1">
+                                        <a class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editMapel{{ $mapel->id }}">Edit</a>
+                                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDelete{{ $mapel->id }}">
+                                            Hapus
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                             <!-- Modal Konfirmasi -->

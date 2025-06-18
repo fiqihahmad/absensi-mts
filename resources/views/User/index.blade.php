@@ -4,6 +4,7 @@
 
 @section('content')
 
+{{-- Pesan dari controller 'with()' --}}
 @if(session('edit'))
 <div class="alert alert-success">
     {{ session('edit') }}

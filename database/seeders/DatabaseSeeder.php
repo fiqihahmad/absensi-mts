@@ -24,16 +24,19 @@ class DatabaseSeeder extends Seeder
         //     'role' => 'admin'
         // ]);
 
-        $faker = Factory::create('id_ID'); // Create a Faker instance with Indonesian locale
+        // $faker = Factory::create('id_ID');
 
 
-        for ($i = 0; $i < 7; $i++) {
-            Siswa::create([
-                'nis' => $faker->unique()->randomNumber(8),
-                'nama' => $faker->name,
-                'jk' => $faker->randomElement(['L', 'P']),
-                'kelas_id' => '8B',
-            ]);
-        }
+        // for ($i = 0; $i < 7; $i++) {
+        //     Siswa::create([
+        //         'nis' => $faker->unique()->randomNumber(8),
+        //         'nama' => $faker->name,
+        //         'jk' => $faker->randomElement(['L', 'P']),
+        //         'kelas_id' => '8B',
+        //     ]);
+        // }
+
+
+        
     }
 }

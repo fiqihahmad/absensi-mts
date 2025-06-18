@@ -18,13 +18,8 @@ class Siswa extends Model
         return $this->belongsTo(Kelas::class, 'kelas_id');
     }
 
-    public function absensiMapel()
+    public function absensi()
     {
-        return $this->hasMany(AbsensiMapel::class, 'siswa_id');
-    }
-
-    public function absensiKelas()
-    {
-        return $this->hasMany(AbsensiKelas::class, 'siswa_id');
+        return $this->hasMany(Absensi::class, 'siswa_id');
     }
 }

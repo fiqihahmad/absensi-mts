@@ -4,7 +4,7 @@
 <style>
     @media print {
     @page {
-        margin: 6mm;
+        margin: 5mm;
     }
 
     body {
@@ -14,15 +14,37 @@
     }
 
     table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 12px;
-    }
+            width: 100%;
+            border-collapse: collapse;
+            page-break-inside: auto;
+            font-size: 12px;
+        }
 
-    th, td {
-        border: 1px solid #000 !important;
-        color: #000 !important;
-        padding: 2px;
+        tbody {
+            display: table-row-group;
+        }
+
+        tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+        }
+
+        th, td {
+            border: 1px solid #000 !important; 
+            color: #000 !important;             
+            padding: 2px;
+        }
+
+    .sidebar,
+    .navbar,
+    .no-print {
+        display: none !important;
+    }
+    
+    #print-area, #print-area-1 {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
     }
 
     .row {
@@ -50,8 +72,9 @@
 
 @section('content')
 <div class="container">
-    <h1 class="h3 mb-3">Rekap Absensi Kelas</h1>
-    <div class="card">
+    <h1 class="h3 mb-3 no-print">Rekap Absensi Kelas</h1>
+    <p>cek</p>
+    <div class="card no-print">
         <div class="card-body">
             <form method="GET" class="mb-3">
                 <div class="row">
@@ -94,7 +117,7 @@
     @if($absensi->count() > 0)
     <div class="card">
         <div class="card-body">
-            <button class="btn btn-danger" onclick="printSection('print-area')">
+            <button class="btn btn-danger no-print" onclick="printSection('print-area')">
                 <i class="fas fa-print"></i> Cetak PDF
             </button>
             <div class="table-responsive mt-4" id="print-area">
@@ -173,7 +196,7 @@
         </div>
         <hr>
         <div class="card-body">
-            <button class="btn btn-danger" onclick="printSection('print-area-1')">
+            <button class="btn btn-danger no-print" onclick="printSection('print-area-1')">
                 <i class="fas fa-print"></i> Cetak PDF
             </button>
             <div class="row mt-4" id="print-area-1">

@@ -137,9 +137,16 @@
                                 </span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-end">
-                                <a class="dropdown-item" href="{{ url('profil') }}"><i class="align-middle me-1" data-feather="user"></i> Profile</a>
+                                <a class="dropdown-item text-dark" href="{{ url('profil') }}"><i class="align-middle me-1 text-dark" data-feather="user"></i> Profile</a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="{{ url('logout') }}">Log out</a>
+                                <a class="dropdown-item">
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="border-0 p-0" style="background: transparent">
+                                            <i class="align-middle me-1" data-feather="log-out"></i> <span class="align-middle">Logout</span>
+                                        </button>
+                                    </form>
+                                </a>
                             </div>
                         </li>
                         @endauth

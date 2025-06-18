@@ -4,6 +4,7 @@
 
 @section('content')
 <div class="container-fluid p-0">
+    
     @if(!$semester)
         <div class="alert alert-warning">
             <h4>Semester Tidak Aktif</h4>
@@ -20,7 +21,7 @@
             @endforeach
             
             
-            <!-- Kartu Absensi Berdasarkan Kelas (Jika Walikelas) -->
+            <!-- Card Absensi Kelas -->
             @if($kelasWali->count() > 0)
                 <div class="mb-4">
                     <h4 class="h3 mb-3">Absensi Kelas</h4>
@@ -36,10 +37,10 @@
                                             <p class="text-center">Walikelas : {{ $kelas->guru->nama }}</p>
                                         </div>
                                         <div class="d-flex justify-content-center gap-2 mt-3">
-                                            <a href="{{ route('absensi.kelas.input', ['kelas_id' => $kelas->id]) }}" class="btn btn-primary btn-md rounded-3 ">
+                                            <a href="{{ route('absensi.form', ['kelas_id' => $kelas->id]) }}" class="btn btn-primary btn-md rounded-3 ">
                                                 <i class="align-middle" data-feather="book-open"></i></i> Isi Absensi
                                             </a>
-                                            <a href="{{ route('absensi.kelas.edit', ['kelas_id' => $kelas->id]) }}" class="btn btn-outline-primary btn-md rounded-3 ">
+                                            <a href="{{ route('absensi.edit', ['kelas_id' => $kelas->id]) }}" class="btn btn-outline-primary btn-md rounded-3 ">
                                                 <i class="align-middle" data-feather="edit"></i> Edit Absensi
                                             </a>
                                         </div>
@@ -51,22 +52,23 @@
                 </div>
             @endif
 
-            <!-- Kartu Absensi Berdasarkan Jadwal Mapel -->
+            <!-- Card Absensi Berdasarkan Jadwal Mapel -->
             <div class="mt-4">
                 <h4 class="h3 mb-3">Absensi Mata Pelajaran</h4>
                 <div class="row">
                     @foreach($jadwalGuru as $row)
+                    {{-- @dd($row) --}}
                         <div class="col-md-4 mb-3">
                             <div class="card shadow-lg border-0 rounded-4 h-100">
                                 <div class="card-body d-flex flex-column justify-content-between">
                                     <div>
                                         <h5 class="card-title fw-bold text-dark text-center">
-                                            {{ $row->mapel_nama }}
+                                            {{ $row->mapel->nama }}
                                         </h5>
                                         <ul class="list-unstyled mb-3">
                                             <li class="d-flex">
                                                 <span class="me-2" style="width: 60px;">Kelas</span>
-                                                <span>: {{ $row->kelas_nama }}</span>
+                                                <span>: {{ $row->kelas->nama }}</span>
                                             </li>
                                             <li class="d-flex">
                                                 <span class="me-2" style="width: 60px;">Hari</span>
@@ -75,10 +77,10 @@
                                         </ul>
                                     </div>
                                     <div class="d-flex justify-content-center gap-2">
-                                        <a href="{{ route('absensi.mapel.input', ['mapel_id' => $row->mapel_id, 'kelas_id' => $row->kelas_id]) }}" class="btn btn-primary btn-md rounded-3">
+                                        <a href="{{ route('absensi.form', ['mapel_id' => $row->mapel_id, 'kelas_id' => $row->kelas_id]) }}" class="btn btn-primary btn-md rounded-3">
                                             <i class="align-middle" data-feather="book-open"></i> Isi Absensi
                                         </a>
-                                        <a href="{{ route('absensi.mapel.data', ['mapel_id' => $row->mapel_id, 'kelas_id' => $row->kelas_id]) }}" class="btn btn-outline-primary btn-md rounded-3">
+                                        <a href="{{ route('absensi.edit', ['mapel_id' => $row->mapel_id, 'kelas_id' => $row->kelas_id]) }}" class="btn btn-outline-primary btn-md rounded-3">
                                             <i class="align-middle" data-feather="edit"></i> Edit Absensi
                                         </a>
                                     </div>

@@ -22,13 +22,16 @@ class SiswaController extends Controller
 
     public function index()
     {
+        // Ambil semua data siswa secara urut berdasarkan kelas dan nama
         $siswas = Siswa::with('kelas')->orderBy('kelas_id')->orderBy('nama')->get();
+
         $kelas = Kelas::all();
         return view('siswa.index', compact('siswas', 'kelas'));
     }
 
     public function store(Request $request)
     {
+        // validasi form input
         $request->validate([
             'nis' => 'required|numeric|unique:siswa,nis',
             'nama' => 'required|string|max:255',
@@ -39,6 +42,7 @@ class SiswaController extends Controller
             'nis.required' => 'NIS wajib diisi!',
         ]);
 
+        // tambah siswa
         Siswa::create($request->all());
 
         return redirect()->route('siswa.index')->with('tambah', 'Data siswa berhasil ditambahkan.');
@@ -53,7 +57,10 @@ class SiswaController extends Controller
             'kelas_id' => 'required|exists:kelas,id'
         ]);
 
+        // cari id siswa yang diedit
         $siswa = Siswa::findOrFail($id);
+
+        // ubah siswa
         $siswa->update($request->all());
 
         return redirect()->route('siswa.index')->with('edit', 'Data siswa berhasil diperbarui.');
@@ -61,21 +68,18 @@ class SiswaController extends Controller
 
     public function destroy($id)
     {
+        // ambil id siswa yang akan dihapus
         $siswa = Siswa::findOrFail($id);
 
-        // Cek relasi di absensi
-        // if ($siswa->absensiMapel()->count() > 0 || $siswa->absensiKelas()->count() > 0) {
-        //     return redirect()->route('siswa.index')->with('error', 
-        //         'Hapus siswa dapat dilakukan ketika semester berakhir dan menghapus semester saat ini di menu semester.');
-        // }
+        // jika semester statusnya aktif tidak dapat hapus siswa
         if (Semester::where('status', 'Aktif')->exists()) {
             return redirect()->route('siswa.index')->with('error', 
                 'Tidak dapat menghapus siswa saat semester aktif.');
         }
 
-
-
+        // hapus siswa
         $siswa->delete();
+        
         return redirect()->route('siswa.index')->with('hapus', 'Data siswa berhasil dihapus.');
     }
 
@@ -87,14 +91,13 @@ class SiswaController extends Controller
         ]);
 
         // Update kelas untuk semua siswa di kelas asal
-        $jumlahSiswa = Siswa::where('kelas_id', $request->kelas_asal)
-                        ->update(['kelas_id' => $request->kelas_tujuan]);
+        $jumlahSiswa = Siswa::where('kelas_id', $request->kelas_asal)->update(['kelas_id' => $request->kelas_tujuan]);
 
         if ($jumlahSiswa > 0) {
-            return redirect()->route('siswa.index')->with('edit', $jumlahSiswa . ' siswa berhasil dipindahkan ke kelas baru');
+            return redirect()->route('siswa.index')->with('edit', $jumlahSiswa . ' siswa berhasil dipindahkan ke kelas baru.');
         }
 
-        return redirect()->route('siswa.index')->with('error', 'Tidak ada siswa di kelas yang dipilih');
+        return redirect()->route('siswa.index')->with('error', 'Tidak ada siswa di kelas yang dipilih.');
     }
 
     public function hapusKelas(Request $request)
@@ -104,15 +107,15 @@ class SiswaController extends Controller
         ]);
 
         // Cek apakah ada siswa di kelas tersebut
-        $siswaCount = Siswa::where('kelas_id', $request->kelas_hapus)->count();
+        $jumlahSiswa = Siswa::where('kelas_id', $request->kelas_hapus)->count();
 
-        if ($siswaCount == 0) {
-            return redirect()->route('siswa.index')->with('error', 'Tidak ada siswa di kelas yang dipilih');
+        if ($jumlahSiswa == 0) {
+            return redirect()->route('siswa.index')->with('error', 'Tidak ada siswa di kelas yang dipilih.');
         }
 
         // Hapus semua siswa di kelas tersebut
-        $deletedCount = Siswa::where('kelas_id', $request->kelas_hapus)->delete();
+        $jumlahSiswaTerhapus = Siswa::where('kelas_id', $request->kelas_hapus)->delete();
 
-        return redirect()->route('siswa.index')->with('hapus', $deletedCount . ' siswa berhasil dihapus dari kelas');
+        return redirect()->route('siswa.index')->with('hapus', $jumlahSiswaTerhapus . ' siswa berhasil dihapus dari kelas.');
     }
 }

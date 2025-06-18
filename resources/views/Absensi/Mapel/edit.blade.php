@@ -11,6 +11,7 @@
 </nav>
 <div class="container-fluid p-0">
    
+{{-- Pesan dari controller 'with()' --}}
 @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         {{ session('success') }}
@@ -79,7 +80,7 @@
     @if(!empty($absensiData))
         <div class="card">
             <div class="card-body">
-                <form action="{{ route('absensi.mapel.update') }}" method="POST">
+                <form action="{{ route('absensi.update') }}" method="POST">
                     @csrf
                     <table class="table table-bordered">
                         <thead class="text-center">

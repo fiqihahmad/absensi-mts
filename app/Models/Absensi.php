@@ -5,15 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class AbsensiKelas extends Model
+class Absensi extends Model
 {
-    protected $table = 'absensi_kelas';
+    protected $table = 'absensi';
     protected $fillable = [
+        'kelas_id',
         'siswa_id',
+        'guru_id',
+        'mapel_id',
         'tanggal',
         'status',
         'semester_id',
-        'kelas_id',
     ];
     protected $casts = [
         'tanggal' => 'date',
@@ -24,6 +26,16 @@ class AbsensiKelas extends Model
     public function siswa()
     {
         return $this->belongsTo(Siswa::class, 'siswa_id');
+    }
+
+    public function guru()
+    {
+        return $this->belongsTo(Guru::class, 'guru_id');
+    }
+
+    public function mapel()
+    {
+        return $this->belongsTo(Mapel::class, 'mapel_id');
     }
 
     public function semester()

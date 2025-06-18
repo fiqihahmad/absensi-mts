@@ -14,6 +14,7 @@ class LoginController extends Controller
 
     public function authenticate(Request $request)
     {
+        // validasi form login
         $credentials = $request->validate([
             'username' => ['required'],
             'password' => ['required'],
@@ -22,16 +23,11 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             
-            $user = Auth::user();
             $semesterAktif = Semester::where('status', 'aktif')->first();
             $semester = $semesterAktif ? "Semester {$semesterAktif->semester} Tahun Pelajaran {$semesterAktif->tahun_ajaran}": "Semester Yang Belum Aktif";
-            if ($user->role === 'guru' && $user->guru) {
-                $name = $user->guru->nama;
-            } else {
-                $name = $user->username;
-            }
             
-            return redirect()->intended('/')->with('success', "Selamat Datang, $name! Anda Login Pada $semester.");;
+            
+            return redirect()->intended('/')->with('success', "Login berhasil, semester saat ini $semester.");;
         }
  
         return back()->withErrors([

@@ -9,7 +9,9 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    @if ($errors->any())
+
+                {{-- Pesan dari controller 'with()' --}}
+                @if ($errors->any())
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <ul class="mb-0 list-unstyled">
                             @foreach ($errors->all() as $error)
@@ -202,11 +204,11 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="nis" class="form-label">NIS</label>
-                            <input type="number" class="form-control" name="nis" placeholder="930230232" required>
+                            <input type="number" class="form-control" name="nis" required>
                         </div>
                         <div class="mb-3">
                             <label for="nama" class="form-label">Nama</label>
-                            <input type="text" class="form-control" name="nama" placeholder="Budi" required>
+                            <input type="text" class="form-control" name="nama" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Jenis Kelamin</label>

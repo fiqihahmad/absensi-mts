@@ -1,9 +1,6 @@
 <?php
 
 use App\Http\Controllers\AbsensiController;
-use App\Http\Controllers\AbsensiKelasController;
-use App\Http\Controllers\AbsensiMapelController;
-use App\Http\Controllers\AMController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\JadwalController;
@@ -11,8 +8,6 @@ use App\Http\Controllers\KelasController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MapelController;
 use App\Http\Controllers\RekapController;
-use App\Http\Controllers\RekapKelasController;
-use App\Http\Controllers\RekapMapelController;
 use App\Http\Controllers\SemesterController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\UserController;
@@ -62,26 +57,16 @@ Route::middleware(['auth'])->group(function () {
     // Absensi Routes
     Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
     
-    // Absensi Mapel
-    Route::get('/absensi/input/{mapel_id}/{kelas_id}', [AbsensiMapelController::class, 'formAbsensiMapel'])
-        ->name('absensi.mapel.input');
-    Route::get('/absensi/data/{mapel_id}/{kelas_id}', [AbsensiMapelController::class, 'editAbsensiMapel'])
-        ->name('absensi.mapel.data');
-    Route::post('/absensi/mapel', [AbsensiMapelController::class, 'storeAbsensiMapel'])
-        ->name('absensi.mapel.store');
-    Route::post('/absensi/mapel/update', [AbsensiMapelController::class, 'updateAbsensiMapel'])
-        ->name('absensi.mapel.update');
-    
-    
-    Route::get('/absensi/kelas/input/{kelas_id}', [AbsensiKelasController::class, 'formAbsensiKelas'])->name('absensi.kelas.input'); 
-    Route::get('/absensi/kelas/data/{kelas_id}', [AbsensiKelasController::class, 'editAbsensiKelas'])->name('absensi.kelas.edit'); 
-    Route::post('/absensi/kelas', [AbsensiKelasController::class, 'storeAbsensiKelas'])->name('absensi.kelas.store'); 
-    Route::post('/absensi/kelas/update', [AbsensiKelasController::class, 'updateAbsensiKelas'])->name('absensi.kelas.update'); 
+    Route::get('/absensi/form/{kelas_id}/{mapel_id?}', [AbsensiController::class, 'form'])->name('absensi.form');
+    Route::get('/absensi/edit/{kelas_id}/{mapel_id?}', [AbsensiController::class, 'edit'])->name('absensi.edit');
+    Route::post('/absensi/store', [AbsensiController::class, 'store'])->name('absensi.store');
+    Route::post('/absensi/update', [AbsensiController::class, 'update'])->name('absensi.update');
+
 
     // Rekap Absensi
     Route::prefix('rekap')->group(function () {
-        Route::get('/mapel', [RekapMapelController::class, 'index'])->name('rekap.mapel');
-        Route::get('/kelas', [RekapKelasController::class, 'index'])->name('rekap.kelas');
+        Route::get('/mapel', [RekapController::class, 'mapel'])->name('rekap.mapel');
+        Route::get('/kelas', [RekapController::class, 'kelas'])->name('rekap.kelas');
         Route::get('/pdf', [RekapController::class, 'pdf'])->name('rekap.pdf'); // Tetap pakai controller utama untuk PDF
     });
 

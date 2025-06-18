@@ -17,14 +17,9 @@ class Semester extends Model
         'status' => 'Nonaktif'
     ];
 
-    public function absensiMapel()
+    public function absensi()
     {
-        return $this->hasMany(AbsensiMapel::class, 'semester_id');
-    }
-
-    public function absensiKelas()
-    {
-        return $this->hasMany(AbsensiKelas::class, 'semester_id');
+        return $this->hasMany(Absensi::class, 'semester_id');
     }
 
 }

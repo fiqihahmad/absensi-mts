@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AbsensiKelas;
-use App\Models\AbsensiMapel;
+use App\Models\Absensi;
+use App\Models\Guru;
 use App\Models\Jadwal;
 use App\Models\Kelas;
 use App\Models\Semester;
@@ -11,214 +11,140 @@ use Illuminate\Http\Request;
 
 class RekapController extends Controller
 {
-    public function index(Request $request)
+    // rekap absensi kelas
+    public function kelas(Request $request)
     {
-        $type = $request->type ?? 'mapel'; // 'mapel' or 'kelas'
+        // Mengambil data kelas_id, bulan, dan tahun dari form
         $kelas_id = $request->kelas_id;
-        $mapel_id = $request->mapel_id;
-        $semester = Semester::where('status', 'Aktif')->first();
         $bulan = $request->bulan ?? date('m');
         $tahun = $request->tahun ?? date('Y');
 
-        $jadwal = Jadwal::with(['kelas', 'mapel'])->get();
+        // Ambil semua data kelas dan guru
         $kelasList = Kelas::all();
+        $guruList = Guru::all();
         $absensi = collect();
         $tanggalAbsensi = collect();
+        $semester = null;
 
-        // Inisialisasi default agar tidak error saat compact()
-        $jml_lk = 0;
-        $jml_pr = 0;
-        $jml_total = 0;
-        $jml_s = 0;
-        $jml_i = 0;
-        $jml_a = 0;
-        $hari_efektif = 0;
-        $presentase_hadir = 0;
+        // variabel jumlah rekap
+        $jml_lk = $jml_pr = $jml_total = 0;
+        $jml_s = $jml_i = $jml_a = $jml_absensi = 0;
+        $presentase_sakit = $presentase_izin = $presentase_alpa = $presentase_absensi = 0;
+        $hari_efektif = $presentase_hadir = 0;
 
         if ($kelas_id) {
-            if ($type === 'mapel' && $mapel_id) {
-                $tanggalAbsensi = AbsensiMapel::where('kelas_id', $kelas_id)
-                    ->where('mapel_id', $mapel_id)
-                    ->whereMonth('tanggal', $bulan)
-                    ->whereYear('tanggal', $tahun)
-                    ->orderBy('tanggal')
-                    ->pluck('tanggal')
-                    ->unique()
-                    ->values();
+            // Ambil data semester
+            $semester = Absensi::with('semester')
+                ->where('kelas_id', $kelas_id)
+                ->whereNull('mapel_id')
+                ->whereMonth('tanggal', $bulan)
+                ->whereYear('tanggal', $tahun)
+                ->first()?->semester;
 
-                $absensi = AbsensiMapel::with('siswa')
-                    ->where('kelas_id', $kelas_id)
-                    ->where('mapel_id', $mapel_id)
-                    ->whereMonth('tanggal', $bulan)
-                    ->whereYear('tanggal', $tahun)
-                    ->get()
-                    ->groupBy('siswa_id');
-            } elseif ($type === 'kelas') {
-                $tanggalAbsensi = AbsensiKelas::where('kelas_id', $kelas_id)
-                    ->whereMonth('tanggal', $bulan)
-                    ->whereYear('tanggal', $tahun)
-                    ->orderBy('tanggal')
-                    ->pluck('tanggal')
-                    ->unique()
-                    ->values();
+            // Ambil tanggal absensi
+            $tanggalAbsensi = Absensi::where('kelas_id', $kelas_id)
+                ->whereNull('mapel_id')
+                ->whereMonth('tanggal', $bulan)
+                ->whereYear('tanggal', $tahun)
+                ->orderBy('tanggal')
+                ->pluck('tanggal')
+                ->unique()
+                ->values();
 
-                $absensi = AbsensiKelas::with('siswa')
-                    ->where('kelas_id', $kelas_id)
-                    // ->where('semester_id', $semester->id)
-                    ->whereMonth('tanggal', $bulan)
-                    ->whereYear('tanggal', $tahun)
-                    ->get()
-                    ->groupBy('siswa_id');
-            }
+            // Ambil seluruh data absensi kelas
+            $absensi = Absensi::with('siswa')
+                ->where('kelas_id', $kelas_id)
+                ->whereNull('mapel_id')
+                ->whereMonth('tanggal', $bulan)
+                ->whereYear('tanggal', $tahun)
+                ->get()
+                ->groupBy('siswa_id');
 
-            // Hanya hitung statistik jika data absensi tersedia
+            // ambil data absensi jika datanya ada
             if ($absensi->isNotEmpty()) {
                 $siswa = $absensi->map->first()->pluck('siswa');
 
+                // Hitung jumlah siswa berdasarkan jenis kelamin
                 $jml_lk = $siswa->where('jk', 'L')->count();
                 $jml_pr = $siswa->where('jk', 'P')->count();
                 $jml_total = $siswa->count();
 
+                // Hitung jumlah status sakit, izin, alpa
                 $jml_s = $absensi->flatMap->all()->where('status', 'sakit')->count();
                 $jml_i = $absensi->flatMap->all()->where('status', 'izin')->count();
                 $jml_a = $absensi->flatMap->all()->where('status', 'alpa')->count();
+                $jml_absensi = $jml_s + $jml_i + $jml_a;
 
+                // Hitung presentase kehadiran dan ketidakhadiran
                 $hari_efektif = $tanggalAbsensi->count();
-                $total_kehadiran = $absensi->flatMap->all()->where('status', 'hadir')->count();
-                $total_pertemuan = $jml_total * $hari_efektif;
-
-                $presentase_hadir = $total_pertemuan > 0 ? round(($total_kehadiran / $total_pertemuan) * 100, 2) : 0;
+                if ($hari_efektif > 0 && $jml_total > 0) {
+                    $presentase_sakit = floor(($jml_s * 10000) / ($jml_total * $hari_efektif)) / 100;
+                    $presentase_izin = floor(($jml_i * 10000) / ($jml_total * $hari_efektif)) / 100;
+                    $presentase_alpa = floor(($jml_a * 10000) / ($jml_total * $hari_efektif)) / 100;
+                    $presentase_absensi = $presentase_sakit + $presentase_izin + $presentase_alpa;
+                    $presentase_hadir = 100 - $presentase_absensi;
+                }
             }
         }
 
-        return view('rekap.index', compact(
-            'type',
-            'jadwal',
-            'kelasList',
-            'kelas_id',
-            'mapel_id',
-            'bulan',
-            'semester',
-            'tahun',
-            'tanggalAbsensi',
-            'absensi',
-            'jml_lk',
-            'jml_pr',
-            'jml_total',
-            'jml_s',
-            'jml_i',
-            'jml_a',
-            'hari_efektif',
-            'presentase_hadir'
+        return view('rekap.kelas', compact(
+            'kelasList', 'kelas_id', 'guruList', 'bulan', 'tahun', 'semester',
+            'tanggalAbsensi', 'absensi',
+            'jml_lk', 'jml_pr', 'jml_total',
+            'jml_s', 'jml_i', 'jml_a', 'jml_absensi',
+            'presentase_sakit', 'presentase_izin', 'presentase_alpa',
+            'presentase_absensi', 'hari_efektif', 'presentase_hadir'
         ));
     }
-    
-    function view_pdf(Request $request) {
-        $mpdf = new \Mpdf\Mpdf([
-            'format' => 'A4-L', // A4 landscape
-            'orientation' => 'L',
-        ]);
-        $type = $request->type ?? 'mapel'; // 'mapel' or 'kelas'
+
+    // rekap absensi mapel
+    public function mapel(Request $request)
+    {
+        // Mengambil data kelas_id, mapel_id, bulan, dan tahun dari form
         $kelas_id = $request->kelas_id;
         $mapel_id = $request->mapel_id;
-        $semester = Semester::where('status', 'Aktif')->first();
         $bulan = $request->bulan ?? date('m');
         $tahun = $request->tahun ?? date('Y');
+
+        // ambil data kelas dan jadwal
+        $kelasList = Kelas::all();
         $jadwal = Jadwal::with(['kelas', 'mapel'])->get();
-        $kelas = Kelas::find($kelas_id);
         $absensi = collect();
         $tanggalAbsensi = collect();
-    
-        // Inisialisasi variabel statistik
-        $jml_lk = 0;
-        $jml_pr = 0;
-        $jml_total = 0;
-        $jml_s = 0;
-        $jml_i = 0;
-        $jml_a = 0;
-        $hari_efektif = 0;
-        $presentase_hadir = 0;
-    
-        if ($type === 'mapel' && $mapel_id) {
-            $tanggalAbsensi = AbsensiMapel::where('kelas_id', $kelas_id)
-                ->where('mapel_id', $mapel_id)
-                ->whereMonth('tanggal', $bulan)
-                ->whereYear('tanggal', $tahun)
-                ->orderBy('tanggal')
-                ->pluck('tanggal')
-                ->unique()
-                ->values();
-    
-            $absensi = AbsensiMapel::with('siswa')
-                ->where('kelas_id', $kelas_id)
-                ->where('mapel_id', $mapel_id)
-                ->whereMonth('tanggal', $bulan)
-                ->whereYear('tanggal', $tahun)
-                ->get()
-                ->groupBy('siswa_id');
-        } elseif ($type === 'kelas') {
-            $tanggalAbsensi = AbsensiKelas::where('kelas_id', $kelas_id)
-                ->whereMonth('tanggal', $bulan)
-                ->whereYear('tanggal', $tahun)
-                ->orderBy('tanggal')
-                ->pluck('tanggal')
-                ->unique()
-                ->values();
-    
-            $absensi = AbsensiKelas::with('siswa')
-                ->where('kelas_id', $kelas_id)
-                ->whereMonth('tanggal', $bulan)
-                ->whereYear('tanggal', $tahun)
-                ->get()
-                ->groupBy('siswa_id');
-        }
-    
-        // Hitung statistik jika ada data
-        if ($absensi->isNotEmpty()) {
-            $siswa = $absensi->map->first()->pluck('siswa');
-    
-            $jml_lk = $siswa->where('jk', 'L')->count();
-            $jml_pr = $siswa->where('jk', 'P')->count();
-            $jml_total = $siswa->count();
-    
-            $jml_s = $absensi->flatMap->all()->where('status', 'sakit')->count();
-            $jml_i = $absensi->flatMap->all()->where('status', 'izin')->count();
-            $jml_a = $absensi->flatMap->all()->where('status', 'alpa')->count();
-    
-            $hari_efektif = $tanggalAbsensi->count();
-            $total_kehadiran = $absensi->flatMap->all()->where('status', 'hadir')->count();
-            $total_pertemuan = $jml_total * $hari_efektif;
-    
-            $presentase_hadir = $total_pertemuan > 0 ? round(($total_kehadiran / $total_pertemuan) * 100, 2) : 0;
-        }
-    
-        $html = view('rekap.pdf', compact(
-            'type',
-            'kelas',
-            'mapel_id',
-            'bulan',
-            'tahun',
-            'semester',
-            'jadwal',
-            'tanggalAbsensi',
-            'absensi',
-            'jml_lk',
-            'jml_pr',
-            'jml_total',
-            'jml_s',
-            'jml_i',
-            'jml_a',
-            'hari_efektif',
-            'presentase_hadir'
-        ))->render();
-    
-        $mpdf->WriteHTML($html);
-        
-        // Nama file PDF
-        $filename = 'Rekap_Absensi_'.($type === 'mapel' ? 'Mapel' : 'Kelas').'_'.
-                    $kelas->nama.'_'.date('F_Y').'.pdf';
-        
-        return $mpdf->Output($filename, \Mpdf\Output\Destination::DOWNLOAD);
-    }
+        $semester = null;
 
+        if ($kelas_id && $mapel_id) {
+            // ambil data semester
+            $semester = Absensi::with('semester')
+                ->where('kelas_id', $kelas_id)
+                ->where('mapel_id', $mapel_id)
+                ->whereMonth('tanggal', $bulan)
+                ->whereYear('tanggal', $tahun)
+                ->first()?->semester;
+
+            // ambil tanggal absensi
+            $tanggalAbsensi = Absensi::where('kelas_id', $kelas_id)
+                ->where('mapel_id', $mapel_id)
+                ->whereMonth('tanggal', $bulan)
+                ->whereYear('tanggal', $tahun)
+                ->orderBy('tanggal')
+                ->pluck('tanggal')
+                ->unique()
+                ->values();
+
+            // ambil data absensi
+            $absensi = Absensi::with('siswa')
+                ->where('kelas_id', $kelas_id)
+                ->where('mapel_id', $mapel_id)
+                ->whereMonth('tanggal', $bulan)
+                ->whereYear('tanggal', $tahun)
+                ->get()
+                ->groupBy('siswa_id');
+        }
+
+        return view('rekap.mapel', compact(
+            'jadwal', 'kelasList', 'kelas_id', 'mapel_id', 'bulan', 'tahun', 'semester',
+            'tanggalAbsensi', 'absensi'
+        ));
+    }    
 }
